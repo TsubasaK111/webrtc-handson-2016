@@ -62,3 +62,4 @@ it used to be the case that H264 was the only video transfer protocol allowed on
 # Q:
 - SFU / P2P critical #?
 - vanilla ICE / trickle ICE merits/demerits
+  - why is trickle ICE used more often?

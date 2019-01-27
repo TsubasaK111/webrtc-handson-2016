@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "webserver:start": "node webserver/app.js"
+  },
+  "dependencies": {
+    "express": "^4.16.4"
+  },
+  "name": "webrtc-handson-2016",
+  "version": "1.0.0",
+  "main": "webserver/index.js",
+  "repository": "git@github.com:TsubasaK111/webrtc-handson-2016.git",
+  "author": "TsubasaK111 <Tsubasa.K111@gmail.com>",
+  "license": "MIT"
+}
