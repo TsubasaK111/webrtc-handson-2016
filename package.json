@@ -1,10 +1,12 @@
 {
   "scripts": {
     "start": "yarn webserver:start",
-    "webserver:start": "node webserver/app.js"
+    "webserver:start": "node webserver/app.js",
+    "signalingserver:start": "node server/signaling.js"
   },
   "dependencies": {
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "ws": "^6.1.3"
   },
   "name": "webrtc-handson-2016",
   "version": "1.0.0",

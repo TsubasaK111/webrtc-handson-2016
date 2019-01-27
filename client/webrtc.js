@@ -124,13 +124,17 @@ const prepareNewConnection = (isOffer) => {
 }
 
 
-// 手動シグナリングのための処理を追加する
+// シグナリングで交換する情報を
 const sendSdp = (sessionDescription) => {
-  // シグナリングで交換する情報をテキストエリアに表示する
   console.log('---sending sdp ---');
   textForSendSdp.value = sessionDescription.sdp;
-  textForSendSdp.focus();
-  textForSendSdp.select();
+  /*---
+   textForSendSdp.focus();
+   textForSendSdp.select();
+   ----*/
+  const message = JSON.stringify(sessionDescription);
+  console.log('sending SDP=' + message);
+  ws.send(message);
 }
 
 
@@ -226,8 +230,12 @@ const hangUp = () => {
       readyPeerConn.close();
       readyPeerConn = null;
       negotiationneededCounter = 0;
+      const message = JSON.stringify({ type: 'close' });
+      console.log('sending close message');
+      ws.send(message);
       cleanupVideoElement(remoteVideo);
       textForSendSdp.value = '';
+      textToReceiveSdp.value = '';
       return;
     }
   }
@@ -239,4 +247,71 @@ const hangUp = () => {
 const cleanupVideoElement = (element) => {
   element.pause();
   element.srcObject = null;
+}
+
+// ----
+
+const wsUrl = 'ws://localhost:3001/';
+const ws = new WebSocket(wsUrl);
+ws.onopen = (evt) => {
+  console.log('ws open()');
+};
+ws.onerror = (err) => {
+  console.error('ws onerror() ERR:', err);
+};
+ws.onmessage = (evt) => {
+  console.log('ws onmessage() data:', evt.data);
+  const message = JSON.parse(evt.data);
+  // シグナリングサーバからメッセージを受信した際のイベントを定義する
+  // offer 、 answer それぞれのメッセージを受信した際には、 setOffer() 、 setAnswer() する
+  // Trickle ICEで ICE candidate メッセージを受信した場合は、 RTCIceCandidate を使ってオブジェクト化し addIceCandidate() を実行する
+  switch (message.type) {
+    case 'offer': {
+      console.log('Received offer ...');
+      textToReceiveSdp.value = message.sdp;
+      setOffer(message);
+      break;
+    }
+    case 'answer': {
+      console.log('Received answer ...');
+      textToReceiveSdp.value = message.sdp;
+      setAnswer(message);
+      break;
+    }
+    case 'candidate': {
+      console.log('Received ICE candidate ...');
+      const candidate = new RTCIceCandidate(message.ice);
+      console.log(candidate);
+      addIceCandidate(candidate);
+      break;
+    }
+    case 'close': {
+      console.log('peer is closed ...');
+      hangUp();
+      break;
+    }
+    default: {
+      console.log("Invalid message");
+      break;
+    }
+  };
+};
+
+// ICE candaidate受信時にセットする
+function addIceCandidate(candidate) {
+  if (peerConnection) {
+    peerConnection.addIceCandidate(candidate);
+  }
+  else {
+    console.error('PeerConnection not exist!');
+    return;
+  }
+}
+
+// ICE candidate生成時に送信する
+function sendIceCandidate(candidate) {
+  console.log('---sending ICE candidate ---');
+  const message = JSON.stringify({ type: 'candidate', ice: candidate });
+  console.log('sending candidate=' + message);
+  ws.send(message);
 }
