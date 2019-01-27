@@ -105,6 +105,21 @@ const prepareNewConnection = (isOffer) => {
     }
   }
 
+  // ICEのステータスが変更になったときの処理
+  peerConn.oniceconnectionstatechange = () => {
+    console.log('ICE connection Status has changed to ' + peerConn.iceConnectionState);
+    switch (peerConn.iceConnectionState) {
+      case 'closed':
+      case 'failed':
+        if (readyPeerConn) {
+          hangUp();
+        }
+        break;
+      case 'dissconnected':
+        break;
+    }
+  };
+
   return peerConn;
 }
 
@@ -201,4 +216,27 @@ const setAnswer = async (sessionDescription) => {
   } catch (err) {
     console.error('setRemoteDescription(answer) ERROR: ', err);
   }
+}
+
+
+// P2P通信を切断する
+const hangUp = () => {
+  if (readyPeerConn) {
+    if (readyPeerConn.iceConnectionState !== 'closed') {
+      readyPeerConn.close();
+      readyPeerConn = null;
+      negotiationneededCounter = 0;
+      cleanupVideoElement(remoteVideo);
+      textForSendSdp.value = '';
+      return;
+    }
+  }
+  console.log('RTCPeerConnection is closed.');
+}
+
+
+// ビデオエレメントを初期化する
+const cleanupVideoElement = (element) => {
+  element.pause();
+  element.srcObject = null;
 }
