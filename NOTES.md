@@ -22,6 +22,7 @@ it used to be the case that H264 was the only video transfer protocol allowed on
 # Protocol Flow
 - signaling
 - offer / answer (session definition protocol)
+  - https://webrtcglossary.com/sdp/
 - off SDP
 - answer SDP
 - NAT punching (STUN / TURN)
@@ -58,6 +59,7 @@ it used to be the case that H264 was the only video transfer protocol allowed on
   - a server streams data among all peers
   - ideal in a multiclient 
   - network load is a bottleneck, but clients have 
+  - https://webrtcglossary.com/sfu/
 
 # Q:
 - SFU / P2P critical #?
