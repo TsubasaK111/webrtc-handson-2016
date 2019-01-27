@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "start": "yarn webserver:start",
     "webserver:start": "node webserver/app.js"
   },
   "dependencies": {
