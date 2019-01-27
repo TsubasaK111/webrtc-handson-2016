@@ -70,3 +70,24 @@ it used to be the case that H264 was the only video transfer protocol allowed on
 chrome://webrtc-internals/
 (create dump)
 https://fippo.github.io/webrtc-dump-importer/
+
+
+https://github.com/mganeko/webrtc_screen_multistream
+# Screen Sharing
+- in beta
+- chrome://flags/#enable-experimental-web-platform-features
+- getDisplayMedia
+- chrome-specific feature: media type = screen
+- https://webrtc.github.io/samples/src/content/getusermedia/getdisplaymedia/
+- very fine-grained choices for Chrome 
+- must modify setting flags
+- by switching video 'track's you can easily switch between webcam and screen capturing
+
+# Multistream
+- sending multiple streams (and tracks inside) at once over the same session / connection
+- there were competing protocols (unified plan vs plan b)
+- the protocol will standardize to unified plan soon
+- currently you must specified semantics to unified plan for google Chrome.
+- with unified plan, you will be able to send multiple streams with differing codecs in the same connection
+
+NOTE: onnegotiationneeded fires twice on Chrome

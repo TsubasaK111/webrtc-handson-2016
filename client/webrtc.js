@@ -54,27 +54,20 @@ const prepareNewConnection = (isOffer) => {
   };
 
   // 「ICE Candidateを収集した」時にイベントが発火
-  // Vanilla ICE
   peerConn.onicecandidate = event => {
     if (event.candidate) {
+      // Trickle ICE
+      // Candidate情報を発見する都度相手と交換する
+      // P2P接続するまでの時間を短縮できる可能性がある
       console.log(event.candidate);
+      sendIceCandidate(event.candidate);
     } else {
-      console.log('empty ice event! ICE candidates have been exhausted, sending all candidates via SDP...');
-      sendSdp(peerConn.localDescription);
+      console.log('empty ice event');
+      // Vanilla ICE
+      // console.log('ICE candidates have been exhausted, sending all candidates via SDP...');
+      // sendSdp(peerConn.localDescription);
     }
   };
-
-  // // Trickle ICE
-  // peerConn.onicecandidate = event => {
-  //   if (event.candidate) {
-  //  // Candidate情報を発見する都度相手と交換する
-  //  // P2P接続するまでの時間を短縮できる可能性がある
-  //     console.log(event.candidate);
-  //     sendIceCandidate(event.candidate);
-  //   } else {
-  //     console.log('empty ice event');
-  //   }
-  // };
 
   // ローカルのMediaStreamを利用できるようにする
   // if there are any local MediaStreams (eg video etc), then acquire those tracks and add them to the RTCPeerConnection
@@ -252,6 +245,7 @@ const cleanupVideoElement = (element) => {
 // ----
 
 const wsUrl = 'ws://localhost:3001/';
+
 const ws = new WebSocket(wsUrl);
 ws.onopen = (evt) => {
   console.log('ws open()');
